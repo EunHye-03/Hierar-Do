@@ -22,6 +22,8 @@ No explanation — JSON array only."""
 
 
 def decompose_node(state: HierarDoState) -> dict:
+    if state.get("error") or state.get("goal") is None:
+        return {}
     goal = state["goal"]
     prompt = (
         f"Goal: {goal.title}\n"
