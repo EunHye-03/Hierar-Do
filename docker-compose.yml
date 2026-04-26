@@ -15,7 +15,7 @@ services:
     ports:
       - "8000:8000"
     environment:
-      DATABASE_URL: postgresql://hierardo:hierardo@db:5432/hierardo
+      DATABASE_URL: postgresql+asyncpg://hierardo:hierardo@db:5432/hierardo
       ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY}
     depends_on:
       - db
