@@ -18,14 +18,6 @@ export default function DashboardPage() {
   const latestGoal = goals[0] ?? null;
   const milestones = latestGoal?.milestones ?? [];
 
-  if (isLoading) {
-    return (
-      <div className="pt-24 px-6 text-on-surface-variant text-sm">
-        로딩 중...
-      </div>
-    );
-  }
-
   return (
     <>
       {/* TopAppBar */}
@@ -49,7 +41,11 @@ export default function DashboardPage() {
       </header>
 
       <main className="pt-24 pb-24 px-6 max-w-[1400px] mx-auto">
-        {goals.length === 0 ? (
+        {isLoading ? (
+          <div className="pt-16 text-center text-on-surface-variant text-sm">
+            로딩 중...
+          </div>
+        ) : goals.length === 0 ? (
           <div className="pt-16 text-center text-on-surface-variant">
             아직 목표가 없어요. + 버튼으로 첫 목표를 만들어보세요!
           </div>
@@ -128,7 +124,7 @@ export default function DashboardPage() {
                   </p>
                   <div className="flex items-center justify-between">
                     <span className="text-xs text-white/60 font-medium">
-                      {latestGoal.title}
+                      {latestGoal!.title}
                     </span>
                   </div>
                 </div>
@@ -197,7 +193,7 @@ export default function DashboardPage() {
               <div className="flex items-center justify-between mb-6">
                 <h2 className="font-bold text-2xl text-primary">월간 목표</h2>
                 <span className="text-xs font-bold bg-secondary-container text-on-secondary-container px-2 py-1 rounded">
-                  {latestGoal.deadline}까지
+                  {latestGoal!.deadline}까지
                 </span>
               </div>
               <div className="bg-surface-container-lowest border border-outline-variant p-card-padding rounded-xl relative overflow-hidden shadow-sm">
@@ -209,11 +205,11 @@ export default function DashboardPage() {
                     star
                   </span>
                   <h3 className="font-semibold text-lg text-primary">
-                    {latestGoal.title}
+                    {latestGoal!.title}
                   </h3>
                 </div>
                 <p className="text-base text-on-surface-variant">
-                  {latestGoal.raw_input}
+                  {latestGoal!.raw_input}
                 </p>
               </div>
             </section>
