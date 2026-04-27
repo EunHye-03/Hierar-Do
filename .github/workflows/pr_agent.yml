@@ -13,12 +13,13 @@ jobs:
       issues: write
       pull-requests: write
       contents: read
+      repository-projects: write
     steps:
       - name: PR Agent action
         uses: Codium-ai/pr-agent@main
         env:
           GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
           OPENAI_KEY: ${{ secrets.GEMINI_API_KEY }}
-          CONFIG.MODEL: "gemini/gemini-1.5-pro"
+          CONFIG.MODEL: "google/gemini-1.5-pro"
           PR_REVIEWER.REQUIRE_SCORE_REVIEW: "true"
           PR_DESCRIPTION.PUBLISH_DESCRIPTION_AS_COMMENT: "true"

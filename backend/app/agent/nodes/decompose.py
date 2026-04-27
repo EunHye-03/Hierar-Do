@@ -1,0 +1,60 @@
+import json
+import re
+
+from app.agent.client import client
+from app.agent.state import HierarDoState, ParsedMilestone, ParsedTodo
+
+_SYSTEM = """You are a task decomposition assistant. Break the given goal into exactly 4 weekly milestones.
+Each milestone must have 3-5 daily todos with realistic estimated_minutes (15-120).
+
+Return ONLY a valid JSON array:
+[
+  {
+    "title": "milestone title (Korean OK)",
+    "week_number": 1,
+    "todos": [
+      {"title": "todo title (Korean OK)", "estimated_minutes": 30}
+    ]
+  }
+]
+
+No explanation — JSON array only."""
+
+
+def decompose_node(state: HierarDoState) -> dict:
+    if state.get("error") or state.get("goal") is None:
+        return {}
+    goal = state["goal"]
+    prompt = (
+        f"Goal: {goal.title}\n"
+        f"Original input: {state['raw_input']}\n"
+        f"Deadline: {goal.deadline}\n"
+        f"Available hours per day — weekday: {state['available_hours'].get('weekday', 2)}h, "
+        f"weekend: {state['available_hours'].get('weekend', 4)}h"
+    )
+    try:
+        response = client.messages.create(
+            model="claude-sonnet-4-6",
+            max_tokens=4096,
+            system=_SYSTEM,
+            messages=[{"role": "user", "content": prompt}],
+        )
+        raw = response.content[0].text.strip()
+        raw = re.sub(r"^```(?:json)?\s*", "", raw)
+        raw = re.sub(r"\s*```$", "", raw)
+        data = json.loads(raw)
+        if len(data) != 4:
+            return {"error": f"decompose: expected 4 milestones, got {len(data)}"}
+        milestones = [
+            ParsedMilestone(
+                title=m["title"],
+                week_number=m["week_number"],
+                todos=[ParsedTodo(**t) for t in m["todos"]],
+            )
+            for m in data
+        ]
+        return {"milestones": milestones}
+    except json.JSONDecodeError as e:
+        return {"error": f"decompose: invalid JSON from LLM — {e}"}
+    except Exception as e:
+        return {"error": f"decompose: {e}"}
