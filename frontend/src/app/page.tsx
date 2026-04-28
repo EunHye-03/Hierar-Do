@@ -98,8 +98,8 @@ export default function DashboardPage() {
                 </div>
               </div>
 
-              <div className="flex flex-col justify-center">
-                <div className="bg-primary text-on-primary p-card-padding rounded-xl shadow-lg relative overflow-hidden">
+              <div className="flex flex-col">
+                <div className="bg-primary text-on-primary p-card-padding rounded-xl shadow-lg relative overflow-hidden h-full">
                   <div className="absolute top-0 right-0 p-4 opacity-10">
                     <span className="material-symbols-outlined text-6xl">
                       smart_toy
