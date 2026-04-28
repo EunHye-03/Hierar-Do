@@ -51,14 +51,14 @@ export default function DashboardPage() {
         ) : (
           <div className="flex flex-col gap-10">
             {/* Tier 1: Daily Checklist */}
-            <section className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <div className="flex items-center justify-between mb-6">
-                  <h2 className="font-bold text-2xl text-primary border-l-4 border-primary pl-4">
-                    일일 체크리스트
-                  </h2>
-                  <span className="text-sm text-outline font-medium">오늘</span>
-                </div>
+            <section>
+              <div className="flex items-center justify-between mb-6">
+                <h2 className="font-bold text-2xl text-primary border-l-4 border-primary pl-4">
+                  일일 체크리스트
+                </h2>
+                <span className="text-sm text-outline font-medium">오늘</span>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="bg-white border border-outline-variant rounded-xl divide-y divide-slate-100 shadow-md">
                   {todayTodos.length === 0 ? (
                     <div className="p-5 text-sm text-on-surface-variant text-center">
@@ -96,10 +96,7 @@ export default function DashboardPage() {
                     ))
                   )}
                 </div>
-              </div>
-
-              <div className="flex flex-col">
-                <div className="bg-primary text-on-primary p-card-padding rounded-xl shadow-lg relative overflow-hidden h-full">
+                <div className="bg-primary text-on-primary p-card-padding rounded-xl shadow-lg relative overflow-hidden">
                   <div className="absolute top-0 right-0 p-4 opacity-10">
                     <span className="material-symbols-outlined text-6xl">
                       smart_toy
