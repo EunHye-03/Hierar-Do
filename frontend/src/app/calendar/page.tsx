@@ -1,28 +1,31 @@
 // frontend/src/app/calendar/page.tsx
 "use client";
 import Link from "next/link";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { useGoals, useToggleTodo } from "@/lib/queries";
 import { MonthCalendar } from "@/components/MonthCalendar";
 import { WeekDetail } from "@/components/WeekDetail";
 import type { Todo } from "@/lib/types";
 
 export default function CalendarPage() {
-  const today = new Date();
-  const todayStr = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, "0")}-${String(today.getDate()).padStart(2, "0")}`;
-
-  const [selectedDate, setSelectedDate] = useState<string>(todayStr);
+  const [selectedDate, setSelectedDate] = useState<string>(() => {
+    const d = new Date();
+    return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+  });
   const { data: goals = [], isLoading } = useGoals();
   const { mutate: toggleTodo } = useToggleTodo();
 
-  const todosByDate: Record<string, Todo[]> = {};
-  goals
-    .flatMap((g) => g.milestones.flatMap((m) => m.todos))
-    .filter((t): t is Todo & { due_date: string } => t.due_date !== null)
-    .forEach((t) => {
-      todosByDate[t.due_date] ??= [];
-      todosByDate[t.due_date].push(t);
-    });
+  const todosByDate = useMemo<Record<string, Todo[]>>(() => {
+    const map: Record<string, Todo[]> = {};
+    goals
+      .flatMap((g) => g.milestones.flatMap((m) => m.todos))
+      .filter((t): t is Todo & { due_date: string } => t.due_date !== null)
+      .forEach((t) => {
+        map[t.due_date] ??= [];
+        map[t.due_date].push(t);
+      });
+    return map;
+  }, [goals]);
 
   return (
     <>
