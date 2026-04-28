@@ -22,7 +22,11 @@ export default function DashboardPage() {
       {/* TopAppBar */}
       <header className="fixed top-0 left-0 w-full z-50 flex justify-between items-center px-4 h-16 bg-slate-50 border-b border-slate-200 shadow-none transition-all duration-200 ease-in-out">
         <div className="flex items-center gap-3">
-          <span className="material-symbols-outlined text-primary">menu</span>
+          <Link href="/calendar">
+            <span className="material-symbols-outlined text-primary hover:opacity-70 transition-opacity">
+              menu
+            </span>
+          </Link>
           <h1 className="text-xl font-extrabold tracking-tight text-primary">
             Hierar-Do
           </h1>
