@@ -15,7 +15,7 @@ export default function DashboardPage() {
     .flatMap((g) => g.milestones.flatMap((m) => m.todos))
     .filter((t) => t.due_date === today);
 
-  const latestGoal = goals[0] ?? null;
+  const latestGoal = goals[0];
   const milestones = latestGoal?.milestones ?? [];
 
   return (
@@ -45,7 +45,7 @@ export default function DashboardPage() {
           <div className="pt-16 text-center text-on-surface-variant text-sm">
             로딩 중...
           </div>
-        ) : goals.length === 0 ? (
+        ) : goals.length === 0 || !latestGoal ? (
           <div className="pt-16 text-center text-on-surface-variant">
             아직 목표가 없어요. + 버튼으로 첫 목표를 만들어보세요!
           </div>
@@ -124,7 +124,7 @@ export default function DashboardPage() {
                   </p>
                   <div className="flex items-center justify-between">
                     <span className="text-xs text-white/60 font-medium">
-                      {latestGoal!.title}
+                      {latestGoal.title}
                     </span>
                   </div>
                 </div>
@@ -193,7 +193,7 @@ export default function DashboardPage() {
               <div className="flex items-center justify-between mb-6">
                 <h2 className="font-bold text-2xl text-primary">월간 목표</h2>
                 <span className="text-xs font-bold bg-secondary-container text-on-secondary-container px-2 py-1 rounded">
-                  {latestGoal!.deadline}까지
+                  {latestGoal.deadline}까지
                 </span>
               </div>
               <div className="bg-surface-container-lowest border border-outline-variant p-card-padding rounded-xl relative overflow-hidden shadow-sm">
@@ -205,11 +205,11 @@ export default function DashboardPage() {
                     star
                   </span>
                   <h3 className="font-semibold text-lg text-primary">
-                    {latestGoal!.title}
+                    {latestGoal.title}
                   </h3>
                 </div>
                 <p className="text-base text-on-surface-variant">
-                  {latestGoal!.raw_input}
+                  {latestGoal.raw_input}
                 </p>
               </div>
             </section>

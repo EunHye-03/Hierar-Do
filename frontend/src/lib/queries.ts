@@ -7,7 +7,6 @@ export function useGoals() {
   return useQuery<Goal[]>({
     queryKey: ["goals"],
     queryFn: () => api.get<Goal[]>("/api/v1/goals"),
-    staleTime: 30_000,
   });
 }
 
