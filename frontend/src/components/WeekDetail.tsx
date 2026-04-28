@@ -18,15 +18,15 @@ function toDateStr(date: Date): string {
 }
 
 function getWeekDays(dateStr: string): Date[] {
-  const date = new Date(dateStr);
+  const [y, m, d] = dateStr.split("-").map(Number);
+  const date = new Date(y, m - 1, d);
   const day = date.getDay(); // 0=일요일
   const diffToMonday = day === 0 ? -6 : 1 - day;
-  const monday = new Date(date);
-  monday.setDate(date.getDate() + diffToMonday);
+  const monday = new Date(y, m - 1, d + diffToMonday);
   return Array.from({ length: 7 }, (_, i) => {
-    const d = new Date(monday);
-    d.setDate(monday.getDate() + i);
-    return d;
+    const dt = new Date(monday);
+    dt.setDate(monday.getDate() + i);
+    return dt;
   });
 }
 
@@ -57,13 +57,16 @@ export function WeekDetail({ selectedDate, todosByDate, onToggle }: WeekDetailPr
                 <div key={dateStr}>
                   <div
                     className={`text-center mb-2 py-1 rounded-lg ${
-                      isSelected ? "bg-primary text-white" : ""
+                      isSelected ? "bg-primary text-white" : "text-on-surface"
                     }`}
                   >
                     <div className="text-[10px] font-bold">{DAY_LABELS[i]}</div>
                     <div className="text-sm font-bold">{day.getDate()}</div>
                   </div>
                   <div className="flex flex-col gap-2">
+                    {todos.length === 0 && (
+                      <span className="text-[10px] text-on-surface-variant text-center block pt-2">—</span>
+                    )}
                     {todos.map((todo) => (
                       <label
                         key={todo.id}
