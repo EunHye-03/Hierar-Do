@@ -153,34 +153,27 @@ export default function DashboardPage() {
                         {milestone.title}
                       </h4>
                       <div className="flex items-center gap-4">
-                        <div className="h-1 flex-1 bg-surface-container rounded-full overflow-hidden">
-                          <div
-                            className="h-full bg-primary"
-                            style={{
-                              width: `${
-                                milestone.todos.length === 0
-                                  ? 0
-                                  : Math.round(
-                                      (milestone.todos.filter((t) => t.is_done)
-                                        .length /
-                                        milestone.todos.length) *
-                                        100
-                                    )
-                              }%`,
-                            }}
-                          />
-                        </div>
-                        <span className="text-xs text-outline font-bold">
-                          {milestone.todos.length === 0
-                            ? "0"
-                            : Math.round(
-                                (milestone.todos.filter((t) => t.is_done)
-                                  .length /
-                                  milestone.todos.length) *
-                                  100
-                              )}
-                          %
-                        </span>
+                        {(() => {
+                          const pct =
+                            milestone.todos.length === 0
+                              ? 0
+                              : Math.round(
+                                  (milestone.todos.filter((t) => t.is_done).length /
+                                    milestone.todos.length) *
+                                    100
+                                );
+                          return (
+                            <>
+                              <div className="h-1 flex-1 bg-surface-container rounded-full overflow-hidden">
+                                <div
+                                  className="h-full bg-primary"
+                                  style={{ width: `${pct}%` }}
+                                />
+                              </div>
+                              <span className="text-xs text-outline font-bold">{pct}%</span>
+                            </>
+                          );
+                        })()}
                       </div>
                     </div>
                   </div>
@@ -188,29 +181,38 @@ export default function DashboardPage() {
               </div>
             </section>
 
-            {/* Tier 3: Monthly Goal */}
+            {/* Tier 3: Monthly Goals */}
             <section>
               <div className="flex items-center justify-between mb-6">
                 <h2 className="font-bold text-2xl text-primary">월간 목표</h2>
-                <span className="text-xs font-bold bg-secondary-container text-on-secondary-container px-2 py-1 rounded">
-                  {latestGoal.deadline}까지
-                </span>
               </div>
-              <div className="bg-surface-container-lowest border border-outline-variant p-card-padding rounded-xl relative overflow-hidden shadow-sm">
-                <div className="flex items-start gap-3 mb-4">
-                  <span
-                    className="material-symbols-outlined text-primary"
-                    style={{ fontVariationSettings: "'FILL' 1" }}
+              <div className="flex flex-col gap-4">
+                {goals.map((goal) => (
+                  <div
+                    key={goal.id}
+                    className="bg-surface-container-lowest border border-outline-variant p-card-padding rounded-xl relative overflow-hidden shadow-sm"
                   >
-                    star
-                  </span>
-                  <h3 className="font-semibold text-lg text-primary">
-                    {latestGoal.title}
-                  </h3>
-                </div>
-                <p className="text-base text-on-surface-variant">
-                  {latestGoal.raw_input}
-                </p>
+                    <div className="flex items-start justify-between gap-3 mb-3">
+                      <div className="flex items-start gap-3">
+                        <span
+                          className="material-symbols-outlined text-primary"
+                          style={{ fontVariationSettings: "'FILL' 1" }}
+                        >
+                          star
+                        </span>
+                        <h3 className="font-semibold text-lg text-primary">
+                          {goal.title}
+                        </h3>
+                      </div>
+                      <span className="text-xs font-bold bg-secondary-container text-on-secondary-container px-2 py-1 rounded shrink-0">
+                        {goal.deadline}까지
+                      </span>
+                    </div>
+                    <p className="text-base text-on-surface-variant pl-9">
+                      {goal.raw_input}
+                    </p>
+                  </div>
+                ))}
               </div>
             </section>
           </div>
