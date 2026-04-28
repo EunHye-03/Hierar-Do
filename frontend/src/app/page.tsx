@@ -16,7 +16,6 @@ export default function DashboardPage() {
     .filter((t) => t.due_date === today);
 
   const latestGoal = goals[0];
-  const milestones = latestGoal?.milestones ?? [];
 
   return (
     <>
@@ -132,49 +131,46 @@ export default function DashboardPage() {
             </section>
 
             {/* Tier 2: Weekly Milestones */}
-            <section className="relative">
+            <section>
               <div className="flex items-center justify-between mb-6">
-                <h2 className="font-bold text-2xl text-primary">
-                  주간 마일스톤
-                </h2>
+                <h2 className="font-bold text-2xl text-primary">주간 마일스톤</h2>
               </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 relative pl-indent">
-                <div className="stem-line" />
-                {milestones.map((milestone) => (
-                  <div key={milestone.id} className="relative">
-                    <div className="stem-connector" />
-                    <div className="bg-surface-container-lowest border border-outline-variant p-card-padding rounded-xl shadow-sm hover:shadow-md transition-shadow">
-                      <div className="flex justify-between items-start mb-4">
-                        <div className="px-2 py-0.5 rounded bg-primary-fixed text-on-primary-fixed text-[10px] font-bold">
-                          {milestone.week_number}주차
-                        </div>
-                      </div>
-                      <h4 className="font-semibold text-lg text-on-surface mb-2">
-                        {milestone.title}
-                      </h4>
-                      <div className="flex items-center gap-4">
-                        {(() => {
-                          const pct =
-                            milestone.todos.length === 0
-                              ? 0
-                              : Math.round(
-                                  (milestone.todos.filter((t) => t.is_done).length /
-                                    milestone.todos.length) *
-                                    100
-                                );
-                          return (
-                            <>
+              <div className="flex flex-col gap-8">
+                {goals.map((goal) => (
+                  <div key={goal.id}>
+                    <p className="text-sm font-semibold text-outline mb-3">{goal.title}</p>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      {goal.milestones.map((milestone) => {
+                        const pct =
+                          milestone.todos.length === 0
+                            ? 0
+                            : Math.round(
+                                (milestone.todos.filter((t) => t.is_done).length /
+                                  milestone.todos.length) *
+                                  100
+                              );
+                        return (
+                          <div
+                            key={milestone.id}
+                            className="bg-surface-container-lowest border border-outline-variant p-card-padding rounded-xl shadow-sm hover:shadow-md transition-shadow"
+                          >
+                            <div className="mb-4">
+                              <div className="px-2 py-0.5 rounded bg-primary-fixed text-on-primary-fixed text-[10px] font-bold inline-block">
+                                {milestone.week_number}주차
+                              </div>
+                            </div>
+                            <h4 className="font-semibold text-lg text-on-surface mb-4">
+                              {milestone.title}
+                            </h4>
+                            <div className="flex items-center gap-4">
                               <div className="h-1 flex-1 bg-surface-container rounded-full overflow-hidden">
-                                <div
-                                  className="h-full bg-primary"
-                                  style={{ width: `${pct}%` }}
-                                />
+                                <div className="h-full bg-primary" style={{ width: `${pct}%` }} />
                               </div>
                               <span className="text-xs text-outline font-bold">{pct}%</span>
-                            </>
-                          );
-                        })()}
-                      </div>
+                            </div>
+                          </div>
+                        );
+                      })}
                     </div>
                   </div>
                 ))}
