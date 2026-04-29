@@ -1,6 +1,7 @@
 "use client";
 import { useState } from "react";
 import type { Todo } from "@/lib/types";
+import { toDateStr } from "@/lib/utils";
 
 interface MonthCalendarProps {
   todosByDate: Record<string, Todo[]>;
@@ -8,12 +9,7 @@ interface MonthCalendarProps {
   onDateSelect: (date: string) => void;
 }
 
-function toDateStr(date: Date): string {
-  const y = date.getFullYear();
-  const m = String(date.getMonth() + 1).padStart(2, "0");
-  const d = String(date.getDate()).padStart(2, "0");
-  return `${y}-${m}-${d}`;
-}
+const TODAY_STR = toDateStr(new Date());
 
 function getCalendarDays(year: number, month: number): (Date | null)[] {
   const firstDay = new Date(year, month, 1);
@@ -28,15 +24,14 @@ function getCalendarDays(year: number, month: number): (Date | null)[] {
 }
 
 export function MonthCalendar({ todosByDate, selectedDate, onDateSelect }: MonthCalendarProps) {
-  const today = new Date();
-  const [currentMonth, setCurrentMonth] = useState(
-    new Date(today.getFullYear(), today.getMonth(), 1)
-  );
+  const [currentMonth, setCurrentMonth] = useState(() => {
+    const now = new Date();
+    return new Date(now.getFullYear(), now.getMonth(), 1);
+  });
 
   const year = currentMonth.getFullYear();
   const month = currentMonth.getMonth();
   const days = getCalendarDays(year, month);
-  const todayStr = toDateStr(today);
 
   return (
     <div className="bg-white border border-outline-variant rounded-xl shadow-sm p-4">
@@ -70,7 +65,7 @@ export function MonthCalendar({ todosByDate, selectedDate, onDateSelect }: Month
         {days.map((date, i) => {
           if (!date) return <div key={`empty-${i}`} />;
           const dateStr = toDateStr(date);
-          const isToday = dateStr === todayStr;
+          const isToday = dateStr === TODAY_STR;
           const isSelected = dateStr === selectedDate;
           const hasTodos = !!todosByDate[dateStr]?.length;
 

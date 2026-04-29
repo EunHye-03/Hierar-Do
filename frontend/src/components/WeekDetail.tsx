@@ -1,6 +1,7 @@
 // frontend/src/components/WeekDetail.tsx
 "use client";
 import type { Todo } from "@/lib/types";
+import { toDateStr } from "@/lib/utils";
 
 interface WeekDetailProps {
   selectedDate: string;
@@ -9,13 +10,6 @@ interface WeekDetailProps {
 }
 
 const DAY_LABELS = ["월", "화", "수", "목", "금", "토", "일"];
-
-function toDateStr(date: Date): string {
-  const y = date.getFullYear();
-  const m = String(date.getMonth() + 1).padStart(2, "0");
-  const d = String(date.getDate()).padStart(2, "0");
-  return `${y}-${m}-${d}`;
-}
 
 function getWeekDays(dateStr: string): Date[] {
   const [y, m, d] = dateStr.split("-").map(Number);
@@ -52,7 +46,9 @@ export function WeekDetail({ selectedDate, todosByDate, onToggle }: WeekDetailPr
             {weekDays.map((day, i) => {
               const dateStr = toDateStr(day);
               const isSelected = dateStr === selectedDate;
-              const todos = todosByDate[dateStr] ?? [];
+              const todos = [...(todosByDate[dateStr] ?? [])].sort(
+                (a, b) => Number(a.is_done) - Number(b.is_done)
+              );
               return (
                 <div key={dateStr}>
                   <div

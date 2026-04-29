@@ -13,7 +13,8 @@ export default function DashboardPage() {
   const today = new Date().toISOString().slice(0, 10);
   const todayTodos = goals
     .flatMap((g) => g.milestones.flatMap((m) => m.todos))
-    .filter((t) => t.due_date === today);
+    .filter((t) => t.due_date === today)
+    .sort((a, b) => Number(a.is_done) - Number(b.is_done));
 
   const latestGoal = goals[0];
 
@@ -22,8 +23,8 @@ export default function DashboardPage() {
       {/* TopAppBar */}
       <header className="fixed top-0 left-0 w-full z-50 flex justify-between items-center px-4 h-16 bg-slate-50 border-b border-slate-200 shadow-none transition-all duration-200 ease-in-out">
         <div className="flex items-center gap-3">
-          <Link href="/calendar">
-            <span className="material-symbols-outlined text-primary hover:opacity-70 transition-opacity">
+          <Link href="/calendar" aria-label="캘린더 보기" className="hover:opacity-70 transition-opacity">
+            <span className="material-symbols-outlined text-primary">
               menu
             </span>
           </Link>
