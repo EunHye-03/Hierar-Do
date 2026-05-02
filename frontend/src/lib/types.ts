@@ -41,3 +41,10 @@ export interface CreateGoalResponse {
   milestones: Milestone[];
   todos: Todo[];
 }
+
+export interface RescheduleItem {
+  todo_id: number;
+  title: string;
+  old_due_date: string | null;
+  new_due_date: string;
+}

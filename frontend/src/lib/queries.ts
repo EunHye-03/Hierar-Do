@@ -1,7 +1,7 @@
 // frontend/src/lib/queries.ts
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { api } from "@/lib/api";
-import type { CreateGoalRequest, CreateGoalResponse, Goal } from "@/lib/types";
+import type { CreateGoalRequest, CreateGoalResponse, Goal, RescheduleItem } from "@/lib/types";
 
 export function useGoals() {
   return useQuery<Goal[]>({
@@ -26,6 +26,20 @@ export function useToggleTodo() {
   return useMutation<unknown, Error, { todoId: number; isDone: boolean }>({
     mutationFn: ({ todoId, isDone }) =>
       api.patch(`/api/v1/todos/${todoId}/${isDone ? "done" : "undone"}`),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["goals"] }),
+  });
+}
+
+export function useReschedulePreview() {
+  return useMutation<RescheduleItem[], Error, void>({
+    mutationFn: () => api.post<RescheduleItem[]>("/api/v1/reschedule/preview"),
+  });
+}
+
+export function useRescheduleApply() {
+  const queryClient = useQueryClient();
+  return useMutation<{ updated: number }, Error, void>({
+    mutationFn: () => api.post<{ updated: number }>("/api/v1/reschedule/apply"),
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ["goals"] }),
   });
 }
