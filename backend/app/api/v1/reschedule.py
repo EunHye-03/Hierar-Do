@@ -7,7 +7,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
 from app.db.session import get_db
-from app.models.goal import Goal
+from app.models.goal import Goal, GoalStatus
 from app.models.milestone import Milestone
 from app.models.todo import Todo
 
@@ -46,7 +46,7 @@ def _compute_reschedule(goals: list[Goal]) -> list[tuple[Todo, date]]:
 async def _load_goals(db: AsyncSession) -> list[Goal]:
     rows = await db.execute(
         select(Goal)
-        .where(Goal.user_id == _MVP_USER_ID)
+        .where(Goal.user_id == _MVP_USER_ID, Goal.status != GoalStatus.done)
         .options(selectinload(Goal.milestones).selectinload(Milestone.todos))
     )
     return list(rows.scalars().all())

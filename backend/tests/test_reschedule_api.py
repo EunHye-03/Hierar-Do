@@ -74,3 +74,35 @@ async def test_apply_is_idempotent(client, mock_pipeline):
 
     second = await client.post("/api/v1/reschedule/apply")
     assert second.json()["updated"] == 0
+
+
+@pytest.mark.asyncio
+async def test_preview_excludes_done_goals(client, mock_pipeline):
+    # Create a goal
+    create_resp = await client.post(
+        "/api/v1/goals",
+        json={"raw_input": "테스트", "available_hours": {"weekday": 2, "weekend": 4}},
+    )
+    goal_id = create_resp.json()["goal"]["id"]
+
+    # Verify preview has items before marking goal done
+    preview_before = (await client.post("/api/v1/reschedule/preview")).json()
+    assert len(preview_before) > 0
+
+    # Directly update goal status to 'done' in the test DB
+    from sqlalchemy import update
+    from app.models.goal import Goal, GoalStatus
+    from app.db.session import get_db
+    from app.main import app
+
+    db_override = app.dependency_overrides.get(get_db)
+    async for db in db_override():
+        await db.execute(
+            update(Goal).where(Goal.id == goal_id).values(status=GoalStatus.done)
+        )
+        await db.commit()
+        break
+
+    # Preview should now be empty (done goal excluded)
+    preview_after = (await client.post("/api/v1/reschedule/preview")).json()
+    assert preview_after == []
