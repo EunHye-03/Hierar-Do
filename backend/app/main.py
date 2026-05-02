@@ -6,6 +6,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from app.db.init_db import init_db
 from app.api.v1 import goals as goals_router
 from app.api.v1 import todos as todos_router
+from app.api.v1 import reschedule as reschedule_router
 
 
 @asynccontextmanager
@@ -26,6 +27,7 @@ app.add_middleware(
 
 app.include_router(goals_router.router, prefix="/api/v1")
 app.include_router(todos_router.router, prefix="/api/v1")
+app.include_router(reschedule_router.router, prefix="/api/v1")
 
 
 @app.get("/health")
