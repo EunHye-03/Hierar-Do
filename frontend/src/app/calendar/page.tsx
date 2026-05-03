@@ -2,18 +2,24 @@
 "use client";
 import Link from "next/link";
 import { useMemo, useState } from "react";
-import { useGoals, useToggleTodo } from "@/lib/queries";
+import { useGoals, useToggleTodo, useReschedulePreview, useRescheduleApply } from "@/lib/queries";
 import { MonthCalendar } from "@/components/MonthCalendar";
 import { WeekDetail } from "@/components/WeekDetail";
-import type { Todo } from "@/lib/types";
+import { RescheduleModal } from "@/components/RescheduleModal";
+import type { RescheduleItem, Todo } from "@/lib/types";
 
 export default function CalendarPage() {
   const [selectedDate, setSelectedDate] = useState<string>(() => {
     const d = new Date();
     return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
   });
+  const [rescheduleItems, setRescheduleItems] = useState<RescheduleItem[] | null>(null);
+  const [noChanges, setNoChanges] = useState(false);
+
   const { data: goals = [], isLoading } = useGoals();
   const { mutate: toggleTodo } = useToggleTodo();
+  const { mutate: previewReschedule, isPending: isPreviewing } = useReschedulePreview();
+  const { mutate: applyReschedule, isPending: isApplying } = useRescheduleApply();
 
   const todosByDate = useMemo<Record<string, Todo[]>>(() => {
     const map: Record<string, Todo[]> = {};
@@ -26,6 +32,25 @@ export default function CalendarPage() {
       });
     return map;
   }, [goals]);
+
+  function handleRescheduleClick() {
+    previewReschedule(undefined, {
+      onSuccess: (items) => {
+        if (items.length === 0) {
+          setNoChanges(true);
+          setTimeout(() => setNoChanges(false), 3000);
+        } else {
+          setRescheduleItems(items);
+        }
+      },
+    });
+  }
+
+  function handleApply() {
+    applyReschedule(undefined, {
+      onSuccess: () => setRescheduleItems(null),
+    });
+  }
 
   return (
     <>
@@ -40,7 +65,20 @@ export default function CalendarPage() {
         <h1 className="flex-1 text-center text-lg font-extrabold tracking-tight text-primary">
           캘린더
         </h1>
-        <div className="w-16" />
+        <div className="flex flex-col items-end w-16">
+          <button
+            onClick={handleRescheduleClick}
+            disabled={isPreviewing}
+            className="text-xs font-bold text-primary hover:opacity-70 transition-opacity disabled:opacity-40"
+          >
+            {isPreviewing ? "..." : "재조정"}
+          </button>
+          {noChanges && (
+            <span className="text-[10px] text-outline whitespace-nowrap">
+              재조정할 일정이 없어요.
+            </span>
+          )}
+        </div>
       </header>
 
       <main className="pt-24 pb-24 px-4 max-w-[1400px] mx-auto">
@@ -63,6 +101,15 @@ export default function CalendarPage() {
           </>
         )}
       </main>
+
+      {rescheduleItems && (
+        <RescheduleModal
+          items={rescheduleItems}
+          onApply={handleApply}
+          onClose={() => setRescheduleItems(null)}
+          isApplying={isApplying}
+        />
+      )}
     </>
   );
 }
